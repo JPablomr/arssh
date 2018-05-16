@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"time"
 
 	//"github.com/aws/aws-sdk-go/aws"
@@ -44,8 +45,8 @@ func getInstanceData() []*InstanceData {
 	var instances []*InstanceData
 	result, err := ec2Svc.DescribeInstances(nil)
 	if err != nil {
-		fmt.Println("Error in getInstanceData", err)
-		panic(nil)
+		fmt.Println("Error getting data from AWS:", err)
+		os.Exit(1)
 	}
 	for _, reservation := range result.Reservations {
 		awsData := reservation.Instances[0]
