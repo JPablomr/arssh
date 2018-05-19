@@ -50,15 +50,18 @@ func getInstanceData() []*InstanceData {
 	}
 	for _, reservation := range result.Reservations {
 		awsData := reservation.Instances[0]
-		data := InstanceData{
-			PrivateIP:  *awsData.NetworkInterfaces[0].PrivateIpAddress,
-			Name:       tagValue(awsData.Tags, "Name"),
-			InstanceID: *awsData.InstanceId,
-			Az:         *awsData.Placement.AvailabilityZone,
-			Os:         getAmiOS(awsData.ImageId),
-			LaunchTime: *awsData.LaunchTime,
+		instanceState := *awsData.State.Name
+		if instanceState == "running" {
+			data := InstanceData{
+				PrivateIP:  *awsData.NetworkInterfaces[0].PrivateIpAddress,
+				Name:       tagValue(awsData.Tags, "Name"),
+				InstanceID: *awsData.InstanceId,
+				Az:         *awsData.Placement.AvailabilityZone,
+				Os:         getAmiOS(awsData.ImageId),
+				LaunchTime: *awsData.LaunchTime,
+			}
+			instances = append(instances, &data)
 		}
-		instances = append(instances, &data)
 	}
 	return instances
 }
